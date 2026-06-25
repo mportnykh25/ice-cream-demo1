@@ -15,8 +15,12 @@ st.caption("Enter your location and a date to predict ice cream sales.")
 st.divider()
 
 # inputs
-city = st.text_input("City", "New York")
+col1, col2 = st.columns(2)
+city = col1.text_input("City", "Springfield")
+state = col2.text_input("State", "Illinois")
 
+# combine for geocoding
+location = f"{city}, {state}"
 selected_date = st.date_input(
     "Date",
     min_value=date.today(),
@@ -33,8 +37,12 @@ if st.button("Predict Sales", type="primary"):
 
         # geocode city
         geo = requests.get(
-            f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=1"
+            f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
         ).json()
+
+        if geo.get("results"):
+    result = geo["results"][0]
+    st.caption(f"📍 Found: {result['name']}, {result.get('admin1', '')}, {result.get('country', '')}")
 
         if not geo.get("results"):
             st.error("City not found. Please try another city.")
