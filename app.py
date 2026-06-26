@@ -21,6 +21,7 @@ state = col2.text_input("State", "Illinois")
 
 # combine for geocoding
 location = f"{city}, {state}"
+
 selected_date = st.date_input(
     "Date",
     min_value=date.today(),
@@ -35,17 +36,27 @@ st.divider()
 if st.button("Predict Sales", type="primary"):
     with st.spinner("Fetching weather forecast..."):
 
-        # geocode city
+# geocode city
+
+geo = requests.get(f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=5").json()
+
+if not geo.get("results"):
+    st.error("City not found. Please try another city.")
+else:
+    # filter by state if provided
+    results = geo["results"]
+    if state:
+        filtered = [r for r in results if state.lower() in r.get("admin1", "").lower()]
+        results = filtered if filtered else results  # fall back to all results if no match
+    
+    result = results[0]
+    lat = result["latitude"]
+    lon = result["longitude"]
+    
+    # show user what was found
+    st.caption(f"📍 Found: {result['name']}, {result.get('admin1', '')}, {result.get('country', '')}")
         geo = requests.get(
-            f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
-        ).json()
-
-
-        if not geo.get("results"):
-            st.error("City not found. Please try another city.")
-        else:
-            lat = geo["results"][0]["latitude"]
-            lon = geo["results"][0]["longitude"]
+            f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1").json()
 
             # fetch forecast for selected date
             weather = requests.get(
