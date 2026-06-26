@@ -40,9 +40,6 @@ if st.button("Predict Sales", type="primary"):
             f"https://geocoding-api.open-meteo.com/v1/search?name={location}&count=1"
         ).json()
 
-        if geo.get("results"):
-    result = geo["results"][0]
-    st.caption(f"📍 Found: {result['name']}, {result.get('admin1', '')}, {result.get('country', '')}")
 
         if not geo.get("results"):
             st.error("City not found. Please try another city.")
