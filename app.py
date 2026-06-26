@@ -37,8 +37,7 @@ if st.button("Predict Sales", type="primary"):
     with st.spinner("Fetching weather forecast..."):
 
 # geocode city
-
-geo = requests.get(f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=5").json()
+    geo = requests.get(f"https://geocoding-api.open-meteo.com/v1/search?name={city}&count=5").json()
 
 if not geo.get("results"):
     st.error("City not found. Please try another city.")
